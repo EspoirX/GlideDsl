@@ -5,8 +5,8 @@ android {
     compileSdkVersion 31
 
     defaultConfig {
-        applicationId = "com.espoir.glidedsl"
-        minSdkVersion 15
+        applicationId = "com.espoir.glidedsldemo"
+        minSdkVersion 16
         targetSdkVersion 31
         versionCode 1
         versionName "1.0"
@@ -24,4 +24,5 @@ android {
 dependencies {
     implementation("androidx.appcompat:appcompat:1.2.0")
     implementation("androidx.core:core-ktx:1.5.0")
+    implementation project(":glidedsl")
 }

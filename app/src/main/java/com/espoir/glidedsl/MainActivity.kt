@@ -1,4 +1,4 @@
-package com.espoir.glidedsl
+package com.espoir.glidedsldemo
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 
