@@ -15,8 +15,7 @@ allprojects {
 dependencies {
       implementation 'com.github.EspoirX:GlideDsl:v1.0.0'
 }
-```
-[README.md](README.md)
+``` 
 
 ### 简单使用：
 
