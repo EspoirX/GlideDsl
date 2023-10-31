@@ -24,6 +24,8 @@ dependencies {
 implementation "com.github.bumptech.glide:glide:$glide_version"
 ```
 
+然后可以使用了：
+
 ```kotlin
   imageView.loadImage(url)
 ```
