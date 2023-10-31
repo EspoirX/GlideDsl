@@ -2,6 +2,7 @@ package com.espoir.glidedslib
 
 import android.graphics.Color
 import android.graphics.Paint
+import android.graphics.Typeface
 import android.text.TextPaint
 import androidx.annotation.Keep
 import java.io.Serializable
@@ -17,6 +18,7 @@ open class SvgaText : Serializable {
     var textAlign: Paint.Align = Paint.Align.LEFT
     var text: String = ""
     var key: String = ""
+    var typeface: Typeface? = null
 
     fun build(): TextPaint {
         return runCatching {
@@ -25,6 +27,9 @@ open class SvgaText : Serializable {
                 textPaint.setARGB(colorA, colorR, colorG, colorB)
             } else {
                 textPaint.color = Color.parseColor(colorString)
+            }
+            if (typeface != null) {
+                textPaint.typeface = typeface
             }
             textPaint.textSize = textSize
             textPaint.textAlign = textAlign

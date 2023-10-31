@@ -263,7 +263,7 @@ class ImageOptions {
         }
 
     /*** 添加 Svga text key */
-    fun addSvagText(textCreation: SvgaText.() -> Unit): SvgaText = SvgaText()
+    fun addSvgaText(textCreation: SvgaText.() -> Unit): SvgaText = SvgaText()
         .apply(textCreation)
         .also {
             if (it.key.isNotEmpty() && it.text.isNotEmpty() && !svgaText.contains(it)) {
