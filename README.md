@@ -1,4 +1,5 @@
 # GlideDsl
+
 glide 的封装
 
 [![](https://jitpack.io/v/EspoirX/GlideDsl.svg)](https://jitpack.io/#EspoirX/GlideDsl)
@@ -20,17 +21,18 @@ dependencies {
 ### 简单使用：
 
 先自己依赖 glide：
+
 ```groovy
 implementation "com.github.bumptech.glide:glide:$glide_version"
 ```
 
-然后可以使用了：
+然后可以使用了（简单的用法示例代码见 MainActivity）：
 
 ```kotlin
   imageView.loadImage(url)
 ```
-如果加载的 resource 属于 Animatable，会自动调用 start()
 
+如果加载的 resource 属于 Animatable，会自动调用 start()
 
 ### 配置加载参数：
 
@@ -55,53 +57,53 @@ implementation "com.github.bumptech.glide:glide:$glide_version"
     grayImage()        //彩色置灰
   }
 ```
-如上，可以设置很多种基础配置。  
+
+如上，可以设置很多种基础配置。
 
 ### 加载回调
 
 1. 回调 drawable
+
 ```kotlin
 imageView.loadImage(url){
-    requestListener {
-        onDrawableSuccess { drawable ->
-           //...
-        }
-        onLoadFailed { 
-            //...
-        }
+    onDrawableSuccess { drawable ->
+       //...
+    }
+    onLoadFailed { 
+        //...
     }
 }
 
 也可以这样：
 
 context.loadImage(url){
-    requestListener {
-        onDrawableSuccess { drawable ->
-            imageView.setImageDrawable(drawable)
-        }
+    onDrawableSuccess { drawable ->
+        imageView.setImageDrawable(drawable)
     }
 }
 ```
 
 2. 回调 bitmap，同理，不过需要调用 asBitmap
+
 ```kotlin
 imageView.loadImage(url){
     asBitmap()
-    requestListener {
-        onBitmapSuccess { drawable ->
-           //...
-        }
+    onBitmapSuccess { drawable ->
+       //...
     }
 }
 ```
 
 ### 加载 gif
+
 ```kotlin
   imageView.loadImage(url){ asGif() }
 ```
+
 asGif() 有个参数 getGifDrawable，默认 false，true 的话会在 onDrawableSuccess 里面得到 GifDrawable
 
 ### 加载 webp 动画
+
 ```kotlin
   imageView.loadImage(url){ webpGif() }
 ```
@@ -115,6 +117,7 @@ webp动画需要自己依赖解码库：
 ### 加载 svga
 
 加载svga需要自己依赖svga库：
+
 ```groovy
     implementation("com.github.yyued:SVGAPlayer-Android:2.6.1")
 ```
@@ -129,19 +132,20 @@ webp动画需要自己依赖解码库：
 ```
 
 然后使用：
+
 ```kotlin
   imageView.loadImage(url){ asSvga() }
 ```
+
 默认使用的是 glide 加载，不想的话 asSvga(false) 即可。
 
 回调的话也是一样：
+
 ```kotlin
 context.loadImage(url) {
     asSvga() 
-    requestListener {
-        onSvgaSuccess { entity, width, height, drawable ->
-           //...
-        }
+    onSvgaSuccess { entity, width, height, drawable ->
+       //...
     }
 }
 ```
@@ -166,11 +170,9 @@ context.loadImage(svgaTitle) {
     }
     addSvgaImage {} //可添加多个
     //...
-    requestListener {
-        onSvgaSuccess { entity, width, height, drawable ->
-            svgaView?.setImageDrawable(drawable)
-            svgaView?.startAnimation()
-        }
+    onSvgaSuccess { entity, width, height, drawable ->
+        svgaView?.setImageDrawable(drawable)
+        svgaView?.startAnimation()
     }
 }
 ```

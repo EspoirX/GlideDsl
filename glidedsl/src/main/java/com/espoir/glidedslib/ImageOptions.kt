@@ -103,7 +103,17 @@ class ImageOptions {
     internal var isNotifyAfterDownload = false
 
     //监听
-    internal var listener: OnImageListener? = null
+    internal var failListener: ((Drawable?) -> Unit)? = null
+    internal var drawableListener: ((Drawable) -> Unit)? = null
+    internal var bitmapListener: ((Bitmap) -> Unit)? = null
+    internal var svgaListener: ((
+        entity: SVGAVideoEntity, width: Int, height: Int,
+        drawable: SVGADrawable
+    ) -> Unit)? = null
+
+    internal var startListener: (() -> Unit)? = null
+    internal var stopListener: (() -> Unit)? = null
+    internal var clearListener: (() -> Unit)? = null
 
     //彩色置灰
     internal var loadGrayImage: Boolean = false
@@ -133,13 +143,11 @@ class ImageOptions {
 
     /*** 监听器，java用 */
     fun intoDrawable(listener: OnDrawableListener) {
-        requestListener {
-            onDrawableSuccess {
-                listener.onDrawableSuccess(it)
-            }
-            onLoadFailed {
-                listener.onLoadFailed(it)
-            }
+        onDrawableSuccess {
+            listener.onDrawableSuccess(it)
+        }
+        onLoadFailed {
+            listener.onLoadFailed(it)
         }
         load()
     }
@@ -147,26 +155,22 @@ class ImageOptions {
     /*** 监听器，java用 */
     fun intoBitmap(listener: OnBitmapListener) {
         asBitmap()
-        requestListener {
-            onBitmapSuccess {
-                listener.onBitmapSuccess(it)
-            }
-            onLoadFailed {
-                listener.onLoadFailed(it)
-            }
+        onBitmapSuccess {
+            listener.onBitmapSuccess(it)
+        }
+        onLoadFailed {
+            listener.onLoadFailed(it)
         }
         load()
     }
 
     /*** 监听器，java用 */
     fun intoSvga(listener: OnSvgaListener) {
-        requestListener {
-            onSvgaSuccess { entity, width, height, drawable ->
-                listener.onSvgaSuccess(entity, width, height, drawable)
-            }
-            onLoadFailed {
-                listener.onLoadFailed(it)
-            }
+        onSvgaSuccess { entity, width, height, drawable ->
+            listener.onSvgaSuccess(entity, width, height, drawable)
+        }
+        onLoadFailed {
+            listener.onLoadFailed(it)
         }
         load()
     }
@@ -225,12 +229,14 @@ class ImageOptions {
     fun skipNetCache() = apply {
         skipNetCache = true
     }
+
     /*** 是否跳过裁剪 ,默认false ，如果获取到图片高宽会 override 高宽
      * 通过设置true 跳过裁剪避免一些原图被放大，
      * */
     fun skipOverride(skip: Boolean) = apply {
         skipOverride = skip
     }
+
     /*** 跳过内存缓存 */
     fun skipMemoryCache() = apply {
         skipMemoryCache = true
@@ -315,8 +321,39 @@ class ImageOptions {
     }
 
     /*** 监听器 */
-    fun requestListener(listener: OnImageListener.() -> Unit) = apply {
-        this.listener = OnImageListener().also(listener)
+    fun onStart(block: () -> Unit) {
+        startListener = block
+    }
+
+    fun onStop(block: () -> Unit) {
+        startListener = block
+    }
+
+    fun onLoadFailed(block: (Drawable?) -> Unit) {
+        failListener = block
+    }
+
+    fun onLoadCleared(block: () -> Unit) {
+        clearListener = block
+    }
+
+    fun onDrawableSuccess(block: (Drawable) -> Unit) {
+        drawableListener= block
+    }
+
+    fun onBitmapSuccess(block: (Bitmap) -> Unit) {
+        bitmapListener = block
+    }
+
+    fun onSvgaSuccess(
+        block: (
+            entity: SVGAVideoEntity,
+            width: Int,
+            height: Int,
+            drawable: SVGADrawable
+        ) -> Unit
+    ) {
+        svgaListener = block
     }
 
     /*** 下载配置 */
@@ -332,53 +369,6 @@ class ImageOptions {
      */
     fun load() {
         GlideImageLoader.loadImage(this)
-    }
-}
-
-open class OnImageListener {
-    internal var failAction: ((Drawable?) -> Unit)? = null
-    internal var drawableAction: ((Drawable) -> Unit)? = null
-    internal var bitmapAction: ((Bitmap) -> Unit)? = null
-    internal var svgaAction: ((
-        entity: SVGAVideoEntity, width: Int, height: Int,
-        drawable: SVGADrawable
-    ) -> Unit)? = null
-
-    internal var startAction: (() -> Unit)? = null
-    internal var stopAction: (() -> Unit)? = null
-    internal var clearAction: (() -> Unit)? = null
-
-    fun onDrawableSuccess(action: (Drawable) -> Unit) {
-        drawableAction = action
-    }
-
-    fun onBitmapSuccess(action: (Bitmap) -> Unit) {
-        bitmapAction = action
-    }
-
-    fun onSvgaSuccess(
-        action: (
-            entity: SVGAVideoEntity, width: Int, height: Int,
-            drawable: SVGADrawable
-        ) -> Unit
-    ) {
-        svgaAction = action
-    }
-
-    fun onStart(action: () -> Unit) {
-        startAction = action
-    }
-
-    fun onStop(action: () -> Unit) {
-        stopAction = action
-    }
-
-    fun onLoadFailed(action: (Drawable?) -> Unit) {
-        failAction = action
-    }
-
-    fun onLoadCleared(action: () -> Unit) {
-        clearAction = action
     }
 }
 

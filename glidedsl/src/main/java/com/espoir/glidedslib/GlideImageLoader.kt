@@ -44,15 +44,12 @@ import java.net.URL
  *     asSvga()
  *     placeholder()
  *     ...
- *     requestListener {
- *         onBitmapSuccess {  }
- *         onDrawableSuccess {  }
- *         onGifDrawableSuccess {  }
- *         onSvgaSuccess {  }
- *         onLoadFailed {  }
- *     }
+ *     onBitmapSuccess {  }
+ *     onDrawableSuccess {  }
+ *     onGifDrawableSuccess {  }
+ *     onSvgaSuccess {  }
+ *     onLoadFailed {  }
  *   }
- *
  */
 
 object GlideImageLoader {
@@ -79,7 +76,7 @@ object GlideImageLoader {
                 }
 
                 override fun onError() {
-                    options.listener?.failAction?.invoke(null)
+                    options.failListener?.invoke(null)
                 }
             })
             return
@@ -89,7 +86,7 @@ object GlideImageLoader {
                 options.loadBitmap -> {
                     this.asBitmap().load(handlerImageRes(options)).apply(buildRequestOptions(options))
                         .addListener(GlideRequestListener()).apply {
-                            if (options.imageView != null && options.listener == null) {
+                            if (options.imageView != null && options.bitmapListener == null) {
                                 into(options.imageView!!)
                             } else {
                                 into(ResultSimpleTarget<Bitmap>(options))
@@ -105,7 +102,7 @@ object GlideImageLoader {
                 options.loadGif && options.getGifDrawable -> {
                     this.asGif().load(handlerImageRes(options)).apply(buildRequestOptions(options))
                         .addListener(GlideRequestListener()).apply {
-                            if (options.imageView != null && options.listener == null) {
+                            if (options.imageView != null && options.drawableListener == null) {
                                 into(options.imageView!!)
                             } else {
                                 into(ResultSimpleTarget<GifDrawable>(options))
@@ -115,8 +112,8 @@ object GlideImageLoader {
 
                 else -> {
                     this.asDrawable().load(handlerImageRes(options)).apply(buildRequestOptions(options))
-                        .addListener(GlideRequestListener()).addListener(GlideRequestListener()).apply {
-                            if (options.imageView != null && options.listener == null) {
+                        .addListener(GlideRequestListener()).apply {
+                            if (options.imageView != null && options.drawableListener == null) {
                                 into(options.imageView!!)
                             } else {
                                 into(ResultSimpleTarget<Drawable>(options))
@@ -286,19 +283,25 @@ object GlideImageLoader {
     }
 
     class ResultSimpleTarget<T>(private val options: ImageOptions) : SimpleTarget<T>() {
+
         override fun onResourceReady(resource: T, transition: Transition<in T>?) {
             when (resource) {
+                is GifDrawable -> {
+                    options.imageView?.setImageDrawable(resource)
+                    options.drawableListener?.invoke(resource)
+                }
+
                 is WebpDrawable -> {
                     options.imageView?.let {
                         it.setImageDrawable(resource)
-                        if (resource is Animatable) {
+                        runCatching {
                             (resource as Animatable).start()
                         }
                     }
-                    options.listener?.drawableAction?.invoke(resource)
+                    options.drawableListener?.invoke(resource)
                 }
 
-                is Bitmap -> options.listener?.bitmapAction?.invoke(resource)
+                is Bitmap -> options.bitmapListener?.invoke(resource)
                 is Drawable -> {
                     options.imageView?.let {
                         it.setImageDrawable(resource)
@@ -306,14 +309,7 @@ object GlideImageLoader {
                             (resource as Animatable).start()
                         }
                     }
-                    options.listener?.drawableAction?.invoke(resource)
-                }
-
-                is GifDrawable -> {
-                    options.imageView?.let {
-                        it.setImageDrawable(resource)
-                    }
-                    options.listener?.drawableAction?.invoke(resource)
+                    options.drawableListener?.invoke(resource)
                 }
 
                 is SVGAVideoEntity -> {
@@ -324,21 +320,21 @@ object GlideImageLoader {
 
         override fun onStart() {
             super.onStart()
-            options.listener?.startAction?.invoke()
+            options.startListener?.invoke()
         }
 
         override fun onStop() {
             super.onStop()
-            options.listener?.stopAction?.invoke()
+            options.stopListener?.invoke()
         }
 
         override fun onLoadFailed(errorDrawable: Drawable?) {
             super.onLoadFailed(errorDrawable)
-            options.listener?.failAction?.invoke(errorDrawable)
+            options.failListener?.invoke(errorDrawable)
         }
 
         override fun onLoadCleared(placeholder: Drawable?) {
-            options.listener?.clearAction?.invoke()
+            options.clearListener?.invoke()
         }
     }
 
@@ -353,8 +349,8 @@ object GlideImageLoader {
         options.svgaImage.clear()
         options.svgaText.clear()
         options.dynamicItem = null
-        options.listener?.svgaAction?.invoke(this, width, height, drawable)
-        if (options.listener?.svgaAction == null && options.imageView != null && options.imageView is SVGAImageView) {
+        options.svgaListener?.invoke(this, width, height, drawable)
+        if (options.svgaListener == null && options.imageView != null && options.imageView is SVGAImageView) {
             (options.imageView as SVGAImageView).setVideoItem(this)
             (options.imageView as SVGAImageView).startAnimation()
         }
