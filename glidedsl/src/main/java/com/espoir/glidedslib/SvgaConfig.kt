@@ -5,6 +5,7 @@ import android.graphics.Paint
 import android.graphics.Typeface
 import android.text.TextPaint
 import androidx.annotation.Keep
+import kotlinx.coroutines.CoroutineScope
 import java.io.Serializable
 
 @Keep
@@ -62,6 +63,30 @@ open class SvgaImage : Serializable {
         if (javaClass != other?.javaClass) return false
 
         other as SvgaImage
+
+        if (key != other.key) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        return key.hashCode()
+    }
+}
+
+@Keep
+open class SvgaImageBitmap : Serializable {
+    var url: String = ""
+    var key: String = ""
+    var width: Int = 0
+    var height: Int = 0
+    var roundAngle: Float = 0f
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as SvgaImageBitmap
 
         if (key != other.key) return false
 

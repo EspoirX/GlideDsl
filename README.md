@@ -176,3 +176,23 @@ context.loadImage(svgaTitle) {
     }
 }
 ```
+
+svga 添加图片 key 时支持用 Bitmap
+```kotlin
+  addSvgaImageBitmap {
+    key = "img_107"
+    width = 94.dp2px
+    height = 142.dp2px
+    roundAngle = 20f.dp2px
+    url = "https://www.surenxianqu.com/wp-content/uploads/2023/07/2023071114474362.png"
+ }
+ addSvgaImageBitmap {} //可添加多个
+ //...
+```
+
+会自动根据url获取到 bitmap 并支持对 bitmap 进行宽高和圆角的变化  
+该功能是用用协程实现的，所以需要依赖：
+```groovy
+  implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4"
+  implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4"
+```

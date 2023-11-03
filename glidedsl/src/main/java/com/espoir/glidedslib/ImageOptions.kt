@@ -9,6 +9,8 @@ import com.bumptech.glide.load.DecodeFormat
 import com.opensource.svgaplayer.SVGADrawable
 import com.opensource.svgaplayer.SVGADynamicEntity
 import com.opensource.svgaplayer.SVGAVideoEntity
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.GlobalScope
 
 class ImageOptions {
 
@@ -67,6 +69,7 @@ class ImageOptions {
     //svga key配置
     internal var svgaText = mutableListOf<SvgaText>()
     internal var svgaImage = mutableListOf<SvgaImage>()
+    internal var svgaImageBitmap = mutableListOf<SvgaImageBitmap>()
     internal var dynamicItem: SVGADynamicEntity? = null
 
     //是否高斯模糊
@@ -268,6 +271,15 @@ class ImageOptions {
             }
         }
 
+    /*** 添加 Svga image for bitmap key 和 addSvgaImage 只能有一个种生效*/
+    fun addSvgaImageBitmap(imageCreation: SvgaImageBitmap.() -> Unit): SvgaImageBitmap = SvgaImageBitmap()
+        .apply(imageCreation)
+        .also {
+            if (it.key.isNotEmpty() && it.url.isNotEmpty() && !svgaImageBitmap.contains(it)) {
+                svgaImageBitmap.add(it)
+            }
+        }
+
     /*** 添加 Svga text key */
     fun addSvgaText(textCreation: SvgaText.() -> Unit): SvgaText = SvgaText()
         .apply(textCreation)
@@ -338,7 +350,7 @@ class ImageOptions {
     }
 
     fun onDrawableSuccess(block: (Drawable) -> Unit) {
-        drawableListener= block
+        drawableListener = block
     }
 
     fun onBitmapSuccess(block: (Bitmap) -> Unit) {
