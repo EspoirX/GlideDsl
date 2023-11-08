@@ -14,7 +14,7 @@ allprojects {
 }
 
 dependencies {
-      implementation 'com.github.EspoirX:GlideDsl:v1.0.0'
+      implementation 'com.github.EspoirX:GlideDsl:vX.X.X'
 }
 ``` 
 
