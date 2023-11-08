@@ -6,8 +6,6 @@ import android.util.DisplayMetrics
 import android.util.TypedValue
 import androidx.appcompat.app.AppCompatActivity
 import com.espoir.glidedsldemo.R
-import com.espoir.glidedslib.loadImage
-import com.opensource.svgaplayer.SVGAImageView
 
 
 class MainActivity : AppCompatActivity() {

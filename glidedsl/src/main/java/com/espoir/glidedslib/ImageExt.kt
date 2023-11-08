@@ -31,13 +31,11 @@ import kotlin.coroutines.suspendCoroutine
  *     asSvga()
  *     placeholder()
  *     ...
- *     requestListener {
- *         onBitmapSuccess {  }
- *         onDrawableSuccess {  }
- *         onGifDrawableSuccess {  }
- *         onSvgaSuccess {  }
- *         onLoadFailed {  }
- *     }
+ *     onBitmapSuccess {  }
+ *     onDrawableSuccess {  }
+ *     onGifDrawableSuccess {  }
+ *     onSvgaSuccess {  }
+ *     onLoadFailed {  }
  *   }
  */
 
@@ -180,29 +178,33 @@ private fun Context.createSVGADynamicImageBitmap(
 
 private suspend fun Context.loadImageForBitmap(svgaImage: SvgaImageBitmap): Pair<String, Bitmap?> =
     suspendCoroutine { coroutine ->
-        if (!activityIsAlive()) {
-            coroutine.resume(Pair(svgaImage.key, null))
-            return@suspendCoroutine
-        }
-        Glide.with(this).asBitmap().apply {
-            if (svgaImage.height != 0 && svgaImage.width != 0) {
-                override(svgaImage.height, svgaImage.width)
-            }
-            if (svgaImage.roundAngle != 0f) {
-                transform(RoundedCorners(svgaImage.roundAngle.toInt()))
-            }
-        }
-            .load(svgaImage.url)
-            .into(object : SimpleTarget<Bitmap>() {
-                override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
-                    coroutine.resume(Pair(svgaImage.key, resource))
+        if (svgaImage.bitmap != null) {
+            coroutine.resume(Pair(svgaImage.key, svgaImage.bitmap))
+        } else {
+            if (!activityIsAlive()) {
+                coroutine.resume(Pair(svgaImage.key, null))
+            } else {
+                Glide.with(this).asBitmap().apply {
+                    if (svgaImage.height != 0 && svgaImage.width != 0) {
+                        override(svgaImage.height, svgaImage.width)
+                    }
+                    if (svgaImage.roundAngle != 0f) {
+                        transform(RoundedCorners(svgaImage.roundAngle.toInt()))
+                    }
                 }
+                    .load(svgaImage.url)
+                    .into(object : SimpleTarget<Bitmap>() {
+                        override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
+                            coroutine.resume(Pair(svgaImage.key, resource))
+                        }
 
-                override fun onLoadFailed(errorDrawable: Drawable?) {
-                    super.onLoadFailed(errorDrawable)
-                    coroutine.resume(Pair(svgaImage.key, null))
-                }
-            })
+                        override fun onLoadFailed(errorDrawable: Drawable?) {
+                            super.onLoadFailed(errorDrawable)
+                            coroutine.resume(Pair(svgaImage.key, null))
+                        }
+                    })
+            }
+        }
     }
 
 
