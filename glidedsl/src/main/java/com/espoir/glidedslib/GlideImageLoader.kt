@@ -136,11 +136,13 @@ object GlideImageLoader {
 
     private fun handlerImageRes(options: ImageOptions): Any? {
         return if (options.res is String) {
-            val url = (options.res as String).trim()
+            var url = (options.res as String).trim()
             if (url.contains("format,webp") || url.endsWith(".webp")) {
                 options.loadWebpGif = true
             }
-            url
+            url = GlideDsl.imageUrlInterceptor?.getUrl(url, options) ?: url
+            Log.i(TAG, "url=$url")
+            return url
         } else {
             options.res
         }

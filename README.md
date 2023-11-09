@@ -14,7 +14,7 @@ allprojects {
 }
 
 dependencies {
-      implementation 'com.github.EspoirX:GlideDsl:v1.0.0'
+      implementation 'com.github.EspoirX:GlideDsl:vX.X.X'
 }
 ``` 
 
@@ -28,7 +28,8 @@ implementation "com.github.bumptech.glide:glide:$glide_version"
 
 在 Application 里面给一下上下文：
 ```kotlin
- GlideDsl.sAppContext = this
+ GlideDsl.init(this)
+    .setImageUrlInterceptor() //可添加url拦截器，可以做一些转格式之类的操作
 ```
 
 然后可以使用了（简单的用法示例代码见 MainActivity）：

@@ -9,8 +9,6 @@ import com.bumptech.glide.load.DecodeFormat
 import com.opensource.svgaplayer.SVGADrawable
 import com.opensource.svgaplayer.SVGADynamicEntity
 import com.opensource.svgaplayer.SVGAVideoEntity
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.GlobalScope
 
 class ImageOptions {
 
@@ -125,6 +123,8 @@ class ImageOptions {
     internal var loadWebpGif: Boolean = false
 
     internal var skipOverride = false
+
+    var enableWebp = true
 
     /*** 资源 */
     fun res(res: Any?) = apply {
@@ -243,6 +243,11 @@ class ImageOptions {
     /*** 跳过内存缓存 */
     fun skipMemoryCache() = apply {
         skipMemoryCache = true
+    }
+
+    /*** 关闭webp转换功能，如果你有在拦截器处理的话 */
+    fun unableWebp() = apply {
+        enableWebp = false
     }
 
     /*** gif 转换 */
